@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Email Account - Qute Mail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/email-client.css' %}" rel="stylesheet">
+    <style>
+        .domain-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .domain-card:hover {
+            border-color: #0d6efd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .domain-card.selected {
+            border-color: #0d6efd;
+            background-color: #e7f3ff;
+        }
+        .registration-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .step.active {
+            background: #0d6efd;
+            color: white;
+        }
+        .step.completed {
+            background: #198754;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'email_client:login' %}">
+                <i class="fas fa-envelope me-2"></i>Qute Mail
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'email_client:login' %}">
+                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="registration-container">
+            <div class="text-center mb-4">
+                <h2><i class="fas fa-user-plus me-2"></i>Create Your Email Account</h2>
+                <p class="text-muted">Join Qute Mail and get your secure email address</p>
+            </div>
+
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+            </div>
+
+            <!-- Step 1: Choose Domain -->
+            <div class="card mb-4" id="domain-selection">
+                <div class="card-header">
+                    <h5><i class="fas fa-globe me-2"></i>Step 1: Choose Your Email Domain</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Select a domain for your email address:</p>
+                    <div class="row" id="domain-cards">
+                        {% for domain in allowed_domains %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card domain-card" data-domain="{{ domain.domain_name }}">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ domain.display_name }}</h5>
+                                    <p class="card-text text-primary">@{{ domain.domain_name }}</p>
+                                    {% if domain.description %}
+                                    <small class="text-muted">{{ domain.description }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No domains are currently available for registration. Please contact the administrator.
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Account Details -->
+            <div class="card" id="account-details" style="display: none;">
+                <div class="card-header">
+                    <h5><i class="fas fa-user me-2"></i>Step 2: Account Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="registrationForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="selected_domain" id="selected_domain_input">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="full_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                       placeholder="Enter your full name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                           placeholder="Enter username" required>
+                                    <span class="input-group-text" id="domain-suffix">@domain</span>
+                                </div>
+                                <small class="form-text text-muted">Choose a unique username for your email address</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Enter password" required minlength="8">
+                                <small class="form-text text-muted">Password must be at least 8 characters long</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                       placeholder="Confirm password" required>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Your Email Address:</strong> <span id="preview-email">username@domain</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" id="back-button">
+                                <i class="fas fa-arrow-left me-1"></i>Back
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-1"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedDomain = '';
+
+        // Domain selection
+        document.querySelectorAll('.domain-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selection from all cards
+                document.querySelectorAll('.domain-card').forEach(c => c.classList.remove('selected'));
+                
+                // Select this card
+                this.classList.add('selected');
+                selectedDomain = this.dataset.domain;
+                
+                // Update form
+                document.getElementById('selected_domain_input').value = selectedDomain;
+                document.getElementById('domain-suffix').textContent = '@' + selectedDomain;
+                
+                // Show next step
+                setTimeout(() => {
+                    document.getElementById('step1').classList.remove('active');
+                    document.getElementById('step1').classList.add('completed');
+                    document.getElementById('step2').classList.add('active');
+                    
+                    document.getElementById('domain-selection').style.display = 'none';
+                    document.getElementById('account-details').style.display = 'block';
+                    
+                    // Scroll to form
+                    document.getElementById('account-details').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+        });
+
+        // Back button
+        document.getElementById('back-button').addEventListener('click', function() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.remove('completed');
+            document.getElementById('step1').classList.add('active');
+            
+            document.getElementById('account-details').style.display = 'none';
+            document.getElementById('domain-selection').style.display = 'block';
+            
+            document.getElementById('domain-selection').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Update email preview
+        document.getElementById('username').addEventListener('input', function() {
+            const username = this.value;
+            const domain = selectedDomain;
+            document.getElementById('preview-email').textContent = username + '@' + domain;
+        });
+
+        // Password confirmation validation
+        document.getElementById('confirm_password').addEventListener('blur', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (password && confirmPassword && password !== confirmPassword) {
+                this.setCustomValidity('Passwords do not match');
+                this.classList.add('is-invalid');
+            } else {
+                this.setCustomValidity('');
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        // Form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+            
+            if (password.length < 8) {
+                e.preventDefault();
+                alert('Password must be at least 8 characters long!');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

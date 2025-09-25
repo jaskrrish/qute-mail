@@ -16,8 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
+
+def redirect_to_client(request):
+    return redirect('email_client:login')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('email_core.urls')),
+    path('', redirect_to_client),  # Redirect root to email client
+    path('', include('email_core.urls')),  # This includes both api/ and client/ paths
 ]
