@@ -368,11 +368,22 @@ def inbox(request):
     try:
         email_account = EmailAccount.objects.get(email_address=user_email)
         
-        # Get regular emails
+        # Get regular emails (exclude ones that are linked to quantum emails)
         all_emails = Email.objects.all().order_by('-received_at')[:100]
         regular_emails = []
         
+        # Get quantum email IDs to avoid duplicates
+        from .models import RealQuantumEmail
+        quantum_email_regular_ids = set(
+            RealQuantumEmail.objects.filter(regular_email__isnull=False)
+            .values_list('regular_email_id', flat=True)
+        )
+        
         for email in all_emails:
+            # Skip emails that are linked to quantum emails to prevent duplicates
+            if email.id in quantum_email_regular_ids:
+                continue
+                
             to_addresses = email.get_to_addresses_list()
             if user_email in to_addresses:
                 # Add the to_addresses as a property for template use
@@ -381,7 +392,6 @@ def inbox(request):
                 regular_emails.append(email)
         
         # Get quantum emails
-        from .models import RealQuantumEmail
         quantum_emails = RealQuantumEmail.objects.filter(
             recipient_email=user_email
         ).order_by('-created_at')[:50]
@@ -389,21 +399,35 @@ def inbox(request):
         # Convert quantum emails to display format
         quantum_email_list = []
         for qemail in quantum_emails:
+            # Try to decrypt subject for display (non-destructive)
+            try:
+                from .qkd.real_crypto import quantum_crypto
+                import json
+                encrypted_subject_data = json.loads(qemail.encrypted_subject)
+                
+                # Decrypt subject for display purposes only
+                decrypted_subject = quantum_crypto.decrypt_with_quantum_key(
+                    encrypted_subject_data, qemail.sender_email, qemail.recipient_email
+                )
+                display_subject = f"🔐 {decrypted_subject}"
+            except Exception:
+                display_subject = "🔒 Quantum Encrypted Email"
+            
             # Create a pseudo-email object for template compatibility
             class QuantumEmailDisplay:
-                def __init__(self, qemail):
+                def __init__(self, qemail, subject):
                     self.id = str(qemail.email_id)
-                    self.subject = "🔒 Quantum Encrypted Email"  # Don't decrypt in list view
+                    self.subject = subject
                     self.from_address = qemail.sender_email
                     self.to_addresses = [qemail.recipient_email]
                     self.received_at = qemail.created_at
                     self.is_read = qemail.status in ['decrypted', 'delivered']
                     self.is_quantum = True
                     self.quantum_security_level = qemail.quantum_security_level
-                    self.body_text = ""  # Don't show body in list view
+                    self.body_text = "Quantum encrypted content - click to decrypt"
                     self.body_html = ""
             
-            quantum_email_list.append(QuantumEmailDisplay(qemail))
+            quantum_email_list.append(QuantumEmailDisplay(qemail, display_subject))
         
         # Combine and sort all emails by date
         all_inbox_emails = regular_emails + quantum_email_list
@@ -513,108 +537,103 @@ def get_email(request, email_id):
     logger.info(f"Authenticated user_email: {user_email}")
     
     try:
-        # First try quantum email via regular email lookup
-        from .models import RealQuantumEmail, QKDKey
-        import json
+        # First try to find quantum email by email_id (UUID)
+        from .models import RealQuantumEmail
         
         try:
-            # Check if this regular email has quantum data
-            email = Email.objects.get(id=email_id)
-            if hasattr(email, 'real_quantum_data') and email.real_quantum_data.exists():
-                quantum_email = email.real_quantum_data.first()
+            quantum_email = RealQuantumEmail.objects.get(email_id=email_id)
+            
+            # Check if user has access to this quantum email
+            if user_email != quantum_email.recipient_email:
+                return JsonResponse({'error': 'Access denied'}, status=403)
+            
+            # Try to decrypt the email content using the real crypto system
+            try:
+                import json
+                from .qkd.real_crypto import quantum_crypto
+                from .models import QKDKey
                 
-                # Check if user has access to this quantum email
+                # Parse encrypted data (stored as JSON strings)
+                encrypted_subject = json.loads(quantum_email.encrypted_subject)
+                encrypted_body = json.loads(quantum_email.encrypted_body_text)
+                encrypted_html = None
+                if quantum_email.encrypted_body_html:
+                    encrypted_html = json.loads(quantum_email.encrypted_body_html)
+                
+                # Get the quantum key used for encryption
+                subject_key_id = encrypted_subject.get('quantum_key_id')
+                subject_key = QKDKey.objects.get(key_id=subject_key_id)
+                
+                # Decrypt each component using the correct method signature
+                decrypted_subject = quantum_crypto.decrypt_with_quantum_key(encrypted_subject, subject_key)
+                
+                # For body, get the key used for body encryption
+                body_key_id = encrypted_body.get('quantum_key_id')
+                body_key = QKDKey.objects.get(key_id=body_key_id)
+                decrypted_body = quantum_crypto.decrypt_with_quantum_key(encrypted_body, body_key)
+                
+                decrypted_html = None
+                if encrypted_html:
+                    html_key_id = encrypted_html.get('quantum_key_id')
+                    html_key = QKDKey.objects.get(key_id=html_key_id)
+                    decrypted_html = quantum_crypto.decrypt_with_quantum_key(encrypted_html, html_key)
+                
+                # Mark as decrypted
+                quantum_email.status = 'decrypted'
+                quantum_email.save()
+                
+                logger.info(f"Successfully decrypted quantum email {email_id}")
+                
+                return JsonResponse({
+                    'id': email_id,
+                    'subject': decrypted_subject,
+                    'from_address': quantum_email.sender_email,
+                    'to_addresses': [quantum_email.recipient_email],
+                    'body_text': decrypted_body,
+                    'body_html': decrypted_html,
+                    'received_at': quantum_email.created_at.isoformat(),
+                    'is_read': quantum_email.status in ['decrypted', 'delivered'],
+                    'is_quantum': True,
+                    'quantum_security_level': quantum_email.quantum_security_level,
+                    'encryption_algorithm': quantum_email.encryption_algorithm
+                })
+                
+            except Exception as decrypt_error:
+                logger.error(f"Quantum email decryption failed: {decrypt_error}")
+                return JsonResponse({
+                    'error': 'Decryption failed',
+                    'details': str(decrypt_error),
+                    'is_quantum': True,
+                    'from_address': quantum_email.sender_email,
+                    'to_addresses': [quantum_email.recipient_email]
+                }, status=500)
+                
+        except RealQuantumEmail.DoesNotExist:
+            # Try regular email
+            try:
+                email = Email.objects.get(id=email_id)
                 to_addresses = email.get_to_addresses_list()
+                
+                # Check if user has access to this email
                 if user_email not in to_addresses:
                     return JsonResponse({'error': 'Access denied'}, status=403)
                 
-                # Try to decrypt the email content using the real crypto system
-                try:
-                    # Parse encrypted data (stored as JSON strings)
-                    encrypted_subject = json.loads(quantum_email.encrypted_subject)
-                    encrypted_body = json.loads(quantum_email.encrypted_body_text)
-                    encrypted_html = None
-                    if quantum_email.encrypted_body_html:
-                        encrypted_html = json.loads(quantum_email.encrypted_body_html)
-                    
-                    # Use the RealQuantumCrypto class for decryption
-                    from .qkd.real_crypto import RealQuantumCrypto
-                    crypto = RealQuantumCrypto()
-                    
-                    # Decrypt each component using its own key ID
-                    # Subject decryption
-                    subject_key_id = encrypted_subject.get('quantum_key_id')
-                    subject_key = QKDKey.objects.get(key_id=subject_key_id)
-                    if subject_key.status not in ['available', 'consumed']:
-                        raise Exception(f"Subject key {subject_key_id} is not usable (status: {subject_key.status})")
-                    decrypted_subject = crypto.decrypt_with_quantum_key(encrypted_subject, subject_key)
-                    
-                    # Body decryption
-                    body_key_id = encrypted_body.get('quantum_key_id')
-                    body_key = QKDKey.objects.get(key_id=body_key_id)
-                    if body_key.status not in ['available', 'consumed']:
-                        raise Exception(f"Body key {body_key_id} is not usable (status: {body_key.status})")
-                    decrypted_body = crypto.decrypt_with_quantum_key(encrypted_body, body_key)
-                    
-                    # HTML decryption
-                    decrypted_html = None
-                    if encrypted_html:
-                        html_key_id = encrypted_html.get('quantum_key_id')
-                        html_key = QKDKey.objects.get(key_id=html_key_id)
-                        if html_key.status not in ['available', 'consumed']:
-                            raise Exception(f"HTML key {html_key_id} is not usable (status: {html_key.status})")
-                        decrypted_html = crypto.decrypt_with_quantum_key(encrypted_html, html_key)
-                    
-                    logger.info(f"Successfully decrypted quantum email {email.id}")
-                    
-                    return JsonResponse({
-                        'id': email.id,
-                        'subject': decrypted_subject,
-                        'from_address': quantum_email.sender_email,
-                        'to_addresses': [quantum_email.recipient_email],
-                        'body_text': decrypted_body,
-                        'body_html': decrypted_html,
-                        'received_at': email.received_at.isoformat(),
-                        'is_read': email.is_read,
-                        'is_quantum': True,
-                        'quantum_security_level': quantum_email.quantum_security_level,
-                        'encryption_algorithm': quantum_email.encryption_algorithm
-                    })
-                    
-                except Exception as decrypt_error:
-                    logger.error(f"Quantum email decryption failed: {decrypt_error}")
-                    return JsonResponse({
-                        'error': 'Decryption failed',
-                        'details': str(decrypt_error),
-                        'is_quantum': True,
-                        'from_address': quantum_email.sender_email,
-                        'to_addresses': [quantum_email.recipient_email]
-                    }, status=500)
+                return JsonResponse({
+                    'id': email.id,
+                    'subject': email.subject,
+                    'from_address': email.from_address,
+                    'to_addresses': to_addresses,
+                    'body_text': email.body_text,
+                    'body_html': email.body_html,
+                    'received_at': email.received_at.isoformat(),
+                    'is_read': email.is_read,
+                    'is_quantum': False
+                })
+            except Email.DoesNotExist:
+                return JsonResponse({'error': 'Email not found'}, status=404)
             
-            # Handle regular (non-quantum) email
-            to_addresses = email.get_to_addresses_list()
-            
-            # Check if user has access to this email
-            if user_email not in to_addresses:
-                return JsonResponse({'error': 'Access denied'}, status=403)
-            
-            return JsonResponse({
-                'id': email.id,
-                'subject': email.subject,
-                'from_address': email.from_address,
-                'to_addresses': to_addresses,
-                'body_text': email.body_text,
-                'body_html': email.body_html,
-                'received_at': email.received_at.isoformat(),
-                'is_read': email.is_read,
-                'is_quantum': False
-            })
-        except Email.DoesNotExist:
-            pass
-            
-        return JsonResponse({'error': 'Email not found'}, status=404)
-        
     except Exception as e:
+        logger.error(f"Error in get_email: {e}")
         return JsonResponse({'error': 'Server error', 'details': str(e)}, status=500)
 
 

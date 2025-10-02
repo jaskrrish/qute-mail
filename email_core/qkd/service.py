@@ -674,50 +674,16 @@ If you cannot decrypt this message, please contact the sender for assistance.
                 quantum_envelope=json.dumps(envelope)
             )
             
-            # Create regular Email record with quantum indicators
-            email = Email.objects.create(
-                message_id=f"<{uuid.uuid4()}@qute-mail>",
-                from_address=sender_email,
-                subject=f"🔒 [QUANTUM ENCRYPTED] {subject}",
-                body_text=f"""
-🔐 REAL QUANTUM ENCRYPTED EMAIL 🔐
-==================================
-
-This email is ACTUALLY protected by Quantum Key Distribution (QKD) technology using real quantum-derived keys!
-
-Original Subject: {subject}
-Quantum Security Level: 99.9%
-Encryption: {encrypted_subject['algorithm']}
-Quantum Key ID: {encrypted_subject['quantum_key_id']}
-Key Stream ID: {encrypted_subject['ksid']}
-Key Size: {encrypted_subject['key_size_bits']} bits
-Encrypted At: {encrypted_subject['encrypted_at']}
-
-⚠️  ENCRYPTED CONTENT BELOW - REQUIRES QKD DECRYPTION ⚠️
-
-To decrypt this message, use the quantum decryption API:
-POST /api/qkd/decrypt/
-{{
-    "quantum_email_id": {quantum_email.id},
-    "recipient_email": "{recipient_email}"
-}}
-
-🛡️ This email is secured with unconditional quantum security! 🛡️
-""",
-                body_html=body_html or "",
-                size_bytes=len((body_text or "").encode('utf-8')),
-                is_sent=True,
-                folder='SENT'
-            )
-            email.set_to_addresses_list([recipient_email])
-            email.save()
+            logger.info(f"REAL quantum email created: Quantum ID {quantum_email.id}")
             
-            # Link the quantum email to the regular email
-            quantum_email.regular_email = email
-            quantum_email.save()
-            
-            logger.info(f"REAL quantum email created: Email ID {email.id}, Quantum ID {quantum_email.id}")
-            return email
+            # Return a dummy Email object that points to the quantum email
+            # This maintains compatibility with the existing API but doesn't create duplicates
+            class QuantumEmailWrapper:
+                def __init__(self, quantum_email):
+                    self.id = quantum_email.email_id
+                    self.quantum_email = quantum_email
+                    
+            return QuantumEmailWrapper(quantum_email)
             
         except Exception as e:
             logger.error(f"Failed to create REAL quantum email: {e}")

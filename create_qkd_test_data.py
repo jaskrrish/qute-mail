@@ -25,7 +25,7 @@ def create_test_data():
     
     # Create simulated Key Manager
     key_manager, created = QKDKeyManager.objects.get_or_create(
-        name="Simulated QKD Manager",
+        name="Local QKD KM",
         defaults={
             'base_url': 'http://localhost:8080',
             'is_simulated': True,

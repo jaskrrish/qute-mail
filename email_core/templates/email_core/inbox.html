@@ -1,57 +1,61 @@
 {% extends 'email_core/base.html' %}
 
-{% block title %}🔒 Qute Mail Inbox - {{ request.session.user_email }}{% endblock %}
+{% block title %}Qute Mail Inbox - {{ request.session.user_email }}{% endblock %}
 
 {% block content %}
-<div class="row mt-3">
+<div class="row mt-4">
     <!-- Sidebar -->
     <div class="col-md-3">
         <!-- QKD Status Panel -->
-        <div class="card border-info mb-3">
-            <div class="card-header bg-info text-white">
-                <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>🔒 Quantum Security</h6>
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-dark text-white border-0">
+                <h6 class="mb-0 text-uppercase" style="font-weight: 600; letter-spacing: 0.5px;">
+                    <i class="fas fa-shield-alt me-2"></i>Quantum Security
+                </h6>
             </div>
-            <div class="card-body p-2">
-                <div class="d-flex align-items-center mb-2">
+            <div class="card-body" style="background: #f8f9fa;">
+                <div class="d-flex align-items-center mb-3">
                     <div class="quantum-status-indicator" id="qkd-status-dot"></div>
-                    <small class="text-muted ms-2" id="qkd-status-text">Checking QKD...</small>
+                    <small class="ms-2" id="qkd-status-text" style="font-weight: 500;">Checking QKD...</small>
                 </div>
-                <div class="progress mb-2" style="height: 8px;">
-                    <div class="progress-bar bg-success" id="key-availability-bar" style="width: 0%"></div>
+                <div class="progress mb-3" style="height: 6px; background: #dee2e6;">
+                    <div class="progress-bar" id="key-availability-bar" style="width: 0%; background: #198754;"></div>
                 </div>
-                <small class="text-muted">
-                    <div>🔑 Keys: <span id="available-keys">-</span> available</div>
-                    <div>🌐 Sessions: <span id="active-sessions">-</span> active</div>
-                </small>
+                <div style="font-size: 0.875rem; line-height: 1.8;">
+                    <div><strong>Keys:</strong> <span id="available-keys">-</span> available</div>
+                    <div><strong>Sessions:</strong> <span id="active-sessions">-</span> active</div>
+                </div>
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="fas fa-folder me-2"></i>Folders</h5>
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-uppercase" style="font-size: 0.875rem; font-weight: 600; letter-spacing: 0.5px;">
+                    <i class="fas fa-folder me-2"></i>Folders
+                </h5>
             </div>
             <div class="list-group list-group-flush">
-                <a href="{% url 'email_client:inbox' %}" class="list-group-item list-group-item-action active">
+                <a href="{% url 'email_client:inbox' %}" class="list-group-item list-group-item-action border-0" style="background: #f8f9fa; border-left: 3px solid #0d6efd !important;">
                     <i class="fas fa-inbox me-2"></i>Inbox
-                    <span class="badge bg-primary rounded-pill float-end" id="inbox-count">{{ emails|length }}</span>
+                    <span class="badge float-end" style="background: #0d6efd;" id="inbox-count">{{ emails|length }}</span>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action">
+                <a href="#" class="list-group-item list-group-item-action border-0">
                     <i class="fas fa-paper-plane me-2"></i>Sent
-                    <span class="badge bg-secondary rounded-pill float-end" id="quantum-sent-count">0</span>
+                    <span class="badge bg-secondary float-end" id="quantum-sent-count">0</span>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action">
+                <a href="#" class="list-group-item list-group-item-action border-0">
                     <i class="fas fa-trash me-2"></i>Trash
                 </a>
             </div>
         </div>
         
-        <div class="card mt-3">
-            <div class="card-body text-center">
-                <button class="btn btn-success btn-lg w-100 mb-2" data-bs-toggle="modal" data-bs-target="#composeModal">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+                <button class="btn btn-dark w-100 mb-2 text-uppercase" style="font-weight: 600; letter-spacing: 0.5px; padding: 0.625rem;" data-bs-toggle="modal" data-bs-target="#composeModal">
                     <i class="fas fa-plus me-2"></i>Compose
                 </button>
-                <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#quantumComposeModal">
-                    <i class="fas fa-lock me-2"></i>🔒 Quantum Email
+                <button class="btn btn-outline-dark w-100 text-uppercase" style="font-weight: 600; letter-spacing: 0.5px; padding: 0.625rem;" data-bs-toggle="modal" data-bs-target="#quantumComposeModal">
+                    <i class="fas fa-lock me-2"></i>Quantum Email
                 </button>
             </div>
         </div>
@@ -59,16 +63,16 @@
 
     <!-- Email List -->
     <div class="col-md-9">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="fas fa-inbox me-2"></i>🔒 Qute Mail Inbox - {{ request.session.user_email }}
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center" style="padding: 1rem 1.25rem;">
+                <h5 class="mb-0 text-uppercase" style="font-weight: 600; letter-spacing: 0.5px; font-size: 1rem;">
+                    <i class="fas fa-inbox me-2"></i>Inbox - {{ request.session.user_email }}
                 </h5>
                 <div>
-                    <button class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#qkdSettingsModal">
+                    <button class="btn btn-outline-secondary btn-sm me-2" style="font-weight: 500;" data-bs-toggle="modal" data-bs-target="#qkdSettingsModal">
                         <i class="fas fa-cog me-1"></i>QKD Settings
                     </button>
-                    <button class="btn btn-outline-primary btn-sm" onclick="refreshInbox()">
+                    <button class="btn btn-outline-dark btn-sm" style="font-weight: 500;" onclick="refreshInbox()">
                         <i class="fas fa-sync me-1"></i>Refresh
                     </button>
                 </div>
@@ -77,38 +81,40 @@
                 <div id="email-list">
                     {% if emails %}
                         {% for email in emails %}
-                        <div class="email-item p-3 border-bottom {% if not email.is_read %}bg-light{% endif %}" 
-                             onclick="openEmail('{{ email.id }}')">
+                        <div class="email-item p-3 border-bottom {% if not email.is_read %}unread-email{% endif %}" 
+                             style="cursor: pointer; transition: all 0.2s ease; {% if not email.is_read %}background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-left: 4px solid #2196f3 !important; box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);{% else %}background: #ffffff;{% endif %}"
+                             onclick="openEmail('{{ email.id }}')"
+                             onmouseover="this.style.background='{% if not email.is_read %}linear-gradient(135deg, #bbdefb 0%, #e1bee7 100%){% else %}#f8f9fa{% endif %}'; this.style.transform='translateX(2px)'"
+                             onmouseout="this.style.background='{% if not email.is_read %}linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%){% else %}#ffffff{% endif %}'; this.style.transform='translateX(0)'">
                             <div class="row align-items-center">
                                 <div class="col-md-3">
-                                    <strong>{{ email.from_address }}</strong>
-                                    <!-- Quantum Security Indicator -->
+                                    <strong style="font-weight: 600; {% if not email.is_read %}color: #1976d2;{% endif %}">{{ email.from_address }}</strong>
                                     {% if email.is_quantum %}
                                         <div class="mt-1">
-                                            <span class="badge bg-success text-white">
-                                                <i class="fas fa-shield-alt me-1"></i>� Quantum
+                                            <span class="badge quantum-badge" style="font-weight: 600; font-size: 0.75rem;">
+                                                <i class="fas fa-shield-alt me-1"></i>QUANTUM SECURED
                                             </span>
                                         </div>
                                     {% endif %}
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="email-subject">
+                                    <div class="email-subject" style="font-weight: {% if not email.is_read %}700{% else %}500{% endif %}; {% if not email.is_read %}color: #1976d2;{% endif %}">
                                         {% if email.is_quantum %}
-                                            <i class="fas fa-shield-alt text-success me-2" title="Quantum Encrypted"></i>
+                                            <i class="fas fa-shield-alt me-2" style="color: #4caf50; font-size: 1.1em;" title="Quantum Encrypted"></i>
                                         {% endif %}
                                         {{ email.subject }}
                                     </div>
-                                    <small class="text-muted">{{ email.body_text|truncatechars:50 }}</small>
+                                    <small class="text-muted" style="font-size: 0.875rem; {% if not email.is_read %}font-weight: 500;{% endif %}">{{ email.body_text|truncatechars:50 }}</small>
                                 </div>
                                 <div class="col-md-3 text-end">
-                                    <small class="text-muted">{{ email.received_at|date:"M d, H:i" }}</small>
+                                    <small class="text-muted" style="font-size: 0.875rem; {% if not email.is_read %}font-weight: 600; color: #1976d2;{% endif %}">{{ email.received_at|date:"M d, H:i" }}</small>
                                     {% if not email.is_read %}
-                                        <span class="badge bg-primary ms-2">New</span>
+                                        <span class="badge new-badge ms-2" style="font-weight: 600; font-size: 0.8rem;">●&nbsp;NEW</span>
                                     {% endif %}
                                     {% if "quantum secured" in email.subject|lower %}
                                         <div class="mt-1">
-                                            <small class="text-info">
-                                                <i class="fas fa-atom me-1"></i>QKD Protected
+                                            <small style="color: #4caf50; font-weight: 600; font-size: 0.8rem;">
+                                                <i class="fas fa-atom me-1"></i>QKD PROTECTED
                                             </small>
                                         </div>
                                     {% endif %}
@@ -118,8 +124,8 @@
                         {% endfor %}
                     {% else %}
                         <div class="text-center p-5">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No emails yet</h5>
+                            <i class="fas fa-inbox fa-3x mb-3" style="color: #adb5bd;"></i>
+                            <h5 class="text-muted" style="font-weight: 600;">No emails yet</h5>
                             <p class="text-muted">Your inbox is empty. Send yourself an email to get started!</p>
                         </div>
                     {% endif %}
@@ -132,36 +138,36 @@
 <!-- Compose Modal -->
 <div class="modal fade" id="composeModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white border-0">
+                <h5 class="modal-title text-uppercase" style="font-weight: 600; letter-spacing: 0.5px;">
                     <i class="fas fa-edit me-2"></i>Compose Email
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="composeForm" method="post" action="{% url 'email_client:send_email' %}">
-                <div class="modal-body">
+                <div class="modal-body" style="background: #f8f9fa;">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="to_address" class="form-label">To:</label>
-                        <input type="email" class="form-control" id="to_address" name="to_address" 
-                               placeholder="recipient@localhost" required>
-                        <small class="form-text text-muted">Available: admin@localhost, user@localhost, support@localhost, test@localhost</small>
+                        <label for="to_address" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">To:</label>
+                        <input type="email" class="form-control border-0 shadow-sm" id="to_address" name="to_address" 
+                               placeholder="recipient@localhost" required style="padding: 0.625rem;">
+                        <small class="form-text text-muted" style="font-size: 0.8125rem;">Available: admin@localhost, user@localhost, support@localhost, test@localhost</small>
                     </div>
                     <div class="mb-3">
-                        <label for="subject" class="form-label">Subject:</label>
-                        <input type="text" class="form-control" id="subject" name="subject" 
-                               placeholder="Enter subject" required>
+                        <label for="subject" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">Subject:</label>
+                        <input type="text" class="form-control border-0 shadow-sm" id="subject" name="subject" 
+                               placeholder="Enter subject" required style="padding: 0.625rem;">
                     </div>
                     <div class="mb-3">
-                        <label for="message" class="form-label">Message:</label>
-                        <textarea class="form-control" id="message" name="message" rows="8" 
-                                  placeholder="Type your message here..." required></textarea>
+                        <label for="message" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">Message:</label>
+                        <textarea class="form-control border-0 shadow-sm" id="message" name="message" rows="8" 
+                                  placeholder="Type your message here..." required style="padding: 0.625rem;"></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
+                <div class="modal-footer bg-white border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-weight: 500;">Cancel</button>
+                    <button type="submit" class="btn btn-dark" style="font-weight: 600;">
                         <i class="fas fa-paper-plane me-1"></i>Send
                     </button>
                 </div>
@@ -173,23 +179,22 @@
 <!-- Email View Modal -->
 <div class="modal fade" id="emailModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="emailSubject"></h5>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-white border-bottom">
+                <h5 class="modal-title" id="emailSubject" style="font-weight: 600;"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <strong>From:</strong> <span id="emailFrom"></span><br>
-                    <strong>To:</strong> <span id="emailTo"></span><br>
-                    <strong>Date:</strong> <span id="emailDate"></span>
+            <div class="modal-body" style="background: #f8f9fa;">
+                <div class="mb-3 p-3 bg-white border" style="font-size: 0.875rem;">
+                    <div class="mb-1"><strong style="font-weight: 600;">From:</strong> <span id="emailFrom"></span></div>
+                    <div class="mb-1"><strong style="font-weight: 600;">To:</strong> <span id="emailTo"></span></div>
+                    <div><strong style="font-weight: 600;">Date:</strong> <span id="emailDate"></span></div>
                 </div>
-                <hr>
-                <div id="emailBody"></div>
+                <div class="p-3 bg-white border" id="emailBody" style="line-height: 1.7;"></div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="replyToEmail()">
+            <div class="modal-footer bg-white border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-weight: 500;">Close</button>
+                <button type="button" class="btn btn-dark" onclick="replyToEmail()" style="font-weight: 600;">
                     <i class="fas fa-reply me-1"></i>Reply
                 </button>
             </div>
@@ -200,72 +205,70 @@
 <!-- Quantum Compose Modal -->
 <div class="modal fade" id="quantumComposeModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content border-info">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-shield-alt me-2"></i>🔒 Quantum Secure Email
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white border-0">
+                <h5 class="modal-title text-uppercase" style="font-weight: 600; letter-spacing: 0.5px;">
+                    <i class="fas fa-shield-alt me-2"></i>Quantum Secure Email
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="quantumComposeForm">
-                <div class="modal-body">
-                    <div class="alert alert-info d-flex align-items-center">
+                <div class="modal-body" style="background: #f8f9fa;">
+                    <div class="alert border-0" style="background: #d1e7dd; color: #0f5132;">
                         <i class="fas fa-info-circle me-2"></i>
-                        <div>
-                            <strong>Quantum Security Active:</strong> This email will be encrypted using quantum-safe keys distributed via QKD protocol (ETSI GS QKD 014).
-                        </div>
+                        <strong>Quantum Security Active:</strong> This email will be encrypted using quantum-safe keys distributed via QKD protocol (ETSI GS QKD 014).
                     </div>
                     
                     <div class="mb-3">
-                        <label for="quantum_to_address" class="form-label">To:</label>
-                        <input type="email" class="form-control" id="quantum_to_address" name="quantum_to_address" 
-                               placeholder="recipient@gmail.com" required>
-                        <small class="form-text text-muted">🌐 Supports external providers: Gmail, Yahoo, Outlook, etc.</small>
+                        <label for="quantum_to_address" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">To:</label>
+                        <input type="email" class="form-control border-0 shadow-sm" id="quantum_to_address" name="quantum_to_address" 
+                               placeholder="recipient@gmail.com" required style="padding: 0.625rem;">
+                        <small class="form-text text-muted" style="font-size: 0.8125rem;">Supports external providers: Gmail, Yahoo, Outlook, etc.</small>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="quantum_subject" class="form-label">Subject:</label>
-                        <input type="text" class="form-control" id="quantum_subject" name="quantum_subject" 
-                               placeholder="Enter subject" required>
+                        <label for="quantum_subject" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">Subject:</label>
+                        <input type="text" class="form-control border-0 shadow-sm" id="quantum_subject" name="quantum_subject" 
+                               placeholder="Enter subject" required style="padding: 0.625rem;">
                     </div>
                     
                     <div class="mb-3">
-                        <label for="quantum_message" class="form-label">Message:</label>
-                        <textarea class="form-control" id="quantum_message" name="quantum_message" rows="8" 
-                                  placeholder="Type your quantum-secured message here..." required></textarea>
+                        <label for="quantum_message" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">Message:</label>
+                        <textarea class="form-control border-0 shadow-sm" id="quantum_message" name="quantum_message" rows="8" 
+                                  placeholder="Type your quantum-secured message here..." required style="padding: 0.625rem;"></textarea>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body p-2">
-                                    <small class="text-muted">
-                                        <strong>Security Level:</strong><br>
-                                        🔑 256-bit Quantum Keys<br>
-                                        🔒 AES-256-GCM Encryption<br>
-                                        ⚡ Forward Secrecy<br>
-                                        🛡️ Post-Quantum Safe
-                                    </small>
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-3" style="background: white;">
+                                    <div style="font-size: 0.875rem; line-height: 1.8;">
+                                        <strong style="font-weight: 600; text-transform: uppercase; font-size: 0.8125rem; letter-spacing: 0.5px;">Security Level:</strong><br>
+                                        <div>256-bit Quantum Keys</div>
+                                        <div>AES-256-GCM Encryption</div>
+                                        <div>Forward Secrecy</div>
+                                        <div>Post-Quantum Safe</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body p-2">
-                                    <small class="text-muted">
-                                        <strong>QKD Status:</strong><br>
-                                        <span id="qkd-status-compose">🔄 Checking...</span><br>
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-3" style="background: white;">
+                                    <div style="font-size: 0.875rem; line-height: 1.8;">
+                                        <strong style="font-weight: 600; text-transform: uppercase; font-size: 0.8125rem; letter-spacing: 0.5px;">QKD Status:</strong><br>
+                                        <span id="qkd-status-compose">Checking...</span><br>
                                         <span id="qkd-keys-compose">Keys: Loading...</span>
-                                    </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-info">
-                        <i class="fas fa-lock me-1"></i>🔒 Send Quantum Email
+                <div class="modal-footer bg-white border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-weight: 500;">Cancel</button>
+                    <button type="submit" class="btn btn-dark" style="font-weight: 600;">
+                        <i class="fas fa-lock me-1"></i>Send Quantum Email
                     </button>
                 </div>
             </form>
@@ -276,20 +279,22 @@
 <!-- QKD Settings Modal -->
 <div class="modal fade" id="qkdSettingsModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white border-0">
+                <h5 class="modal-title text-uppercase" style="font-weight: 600; letter-spacing: 0.5px;">
                     <i class="fas fa-cog me-2"></i>QKD Configuration & Status
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background: #f8f9fa;">
                 <div class="row">
                     <div class="col-md-6">
-                        <h6><i class="fas fa-server me-2"></i>Key Manager Status</h6>
+                        <h6 class="text-uppercase mb-3" style="font-weight: 600; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-server me-2"></i>Key Manager Status
+                        </h6>
                         <div id="key-managers-list">
                             <div class="text-center">
-                                <div class="spinner-border text-primary" role="status">
+                                <div class="spinner-border text-dark" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                                 <p class="mt-2">Loading Key Managers...</p>
@@ -297,10 +302,12 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h6><i class="fas fa-envelope me-2"></i>External Providers</h6>
+                        <h6 class="text-uppercase mb-3" style="font-weight: 600; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-envelope me-2"></i>External Providers
+                        </h6>
                         <div id="external-providers-list">
                             <div class="text-center">
-                                <div class="spinner-border text-primary" role="status">
+                                <div class="spinner-border text-dark" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                                 <p class="mt-2">Loading Email Providers...</p>
@@ -308,49 +315,51 @@
                         </div>
                         
                         <div class="mt-3">
-                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addProviderModal">
+                            <button class="btn btn-dark btn-sm" style="font-weight: 500;" data-bs-toggle="modal" data-bs-target="#addProviderModal">
                                 <i class="fas fa-plus me-1"></i>Add Provider
                             </button>
                         </div>
                     </div>
                 </div>
                 
-                <hr>
+                <hr style="margin: 2rem 0; border-color: #dee2e6;">
                 
                 <div class="row">
                     <div class="col-12">
-                        <h6><i class="fas fa-chart-line me-2"></i>QKD Session Statistics</h6>
+                        <h6 class="text-uppercase mb-3" style="font-weight: 600; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-chart-line me-2"></i>QKD Session Statistics
+                        </h6>
                         <div id="qkd-statistics">
                             <div class="row text-center">
-                                <div class="col-md-3">
-                                    <div class="card bg-primary text-white">
-                                        <div class="card-body p-2">
-                                            <h4 id="total-sessions">-</h4>
-                                            <small>Total Sessions</small>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body p-3" style="background: #0d6efd; color: white;">
+                                            <h4 id="total-sessions" style="font-weight: 600; margin-bottom: 0.5rem;">-</h4>
+                                            <small style="text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Total Sessions</small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="card bg-success text-white">
-                                        <div class="card-body p-2">
-                                            <h4 id="active-sessions-stat">-</h4>
-                                            <small>Active Sessions</small>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body p-3" style="background: #198754; color: white;">
+                                            <h4 id="active-sessions-stat" style="font-weight: 600; margin-bottom: 0.5rem;">-</h4>
+                                            <small style="text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Active Sessions</small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="card bg-info text-white">
-                                        <div class="card-body p-2">
-                                            <h4 id="total-keys-stat">-</h4>
-                                            <small>Quantum Keys</small>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body p-3" style="background: #212529; color: white;">
+                                            <h4 id="total-keys-stat" style="font-weight: 600; margin-bottom: 0.5rem;">-</h4>
+                                            <small style="text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Quantum Keys</small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="card bg-warning text-dark">
-                                        <div class="card-body p-2">
-                                            <h4 id="security-level-stat">256-bit</h4>
-                                            <small>Security Level</small>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body p-3" style="background: #6c757d; color: white;">
+                                            <h4 id="security-level-stat" style="font-weight: 600; margin-bottom: 0.5rem;">256-bit</h4>
+                                            <small style="text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Security Level</small>
                                         </div>
                                     </div>
                                 </div>
@@ -359,9 +368,9 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="testQKDConnection()">
+            <div class="modal-footer bg-white border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-weight: 500;">Close</button>
+                <button type="button" class="btn btn-dark" onclick="testQKDConnection()" style="font-weight: 600;">
                     <i class="fas fa-plug me-1"></i>Test QKD Connection
                 </button>
             </div>
@@ -383,7 +392,7 @@ function openEmail(emailId) {
     
     fetch(url, {
         method: 'GET',
-        credentials: 'same-origin', // Include cookies for session auth
+        credentials: 'same-origin',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -405,14 +414,13 @@ function openEmail(emailId) {
             
             if (data.error) {
                 if (data.error === 'Decryption failed') {
-                    // Handle quantum decryption failure
                     document.getElementById('emailSubject').innerHTML = 
-                        `<i class="fas fa-exclamation-triangle text-warning me-2"></i>🔒 Quantum Email - Decryption Error`;
+                        `<i class="fas fa-exclamation-triangle text-warning me-2"></i>Quantum Email - Decryption Error`;
                     document.getElementById('emailFrom').textContent = data.from_address || 'Unknown';
                     document.getElementById('emailTo').textContent = data.to_addresses ? data.to_addresses.join(', ') : 'Unknown';
                     document.getElementById('emailDate').textContent = new Date().toLocaleString();
                     document.getElementById('emailBody').innerHTML = `
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger border-0">
                             <i class="fas fa-exclamation-triangle me-2"></i>
                             <strong>Quantum Decryption Failed</strong>
                             <p class="mb-2">Unable to decrypt this quantum-secured email. This may indicate:</p>
@@ -431,24 +439,21 @@ function openEmail(emailId) {
             } else {
                 currentEmail = data;
                 
-                // Declare bodyContent at the correct scope
                 let bodyContent;
                 
-                // Handle quantum emails differently
                 if (data.is_quantum) {
                     document.getElementById('emailSubject').innerHTML = 
-                        `<i class="fas fa-shield-alt text-success me-2"></i>🔐 ${data.subject}`;
+                        `<i class="fas fa-shield-alt text-success me-2"></i>${data.subject}`;
                     document.getElementById('emailFrom').textContent = data.from_address;
                     document.getElementById('emailTo').textContent = data.to_addresses.join(', ');
                     document.getElementById('emailDate').textContent = new Date(data.received_at).toLocaleString();
                     
                     let rawBodyContent = data.body_html || data.body_text.replace(/\n/g, '<br>');
                     
-                    // Add quantum security badge to content
                     bodyContent = `
-                        <div class="alert alert-success mb-3">
+                        <div class="alert border-0 mb-3" style="background: #d1e7dd; color: #0f5132;">
                             <i class="fas fa-shield-alt me-2"></i>
-                            <strong>🌟 Quantum-Secured Email Successfully Decrypted</strong>
+                            <strong>Quantum-Secured Email Successfully Decrypted</strong>
                             <div class="row mt-2">
                                 <div class="col-md-6">
                                     <small><strong>Security Level:</strong> ${data.quantum_security_level}%</small>
@@ -463,7 +468,6 @@ function openEmail(emailId) {
                         </div>
                     `;
                 } else {
-                    // Regular email
                     document.getElementById('emailSubject').textContent = data.subject;
                     document.getElementById('emailFrom').textContent = data.from_address;
                     document.getElementById('emailTo').textContent = data.to_addresses.join(', ');
@@ -477,7 +481,6 @@ function openEmail(emailId) {
             
             new bootstrap.Modal(document.getElementById('emailModal')).show();
             
-            // Mark as read if not already
             if (data.is_read !== undefined && !data.is_read) {
                 markAsRead(emailId);
             }
@@ -486,14 +489,13 @@ function openEmail(emailId) {
             console.error('Error loading email:', error);
             console.error('Error details:', error.message);
             
-            // Show detailed error in modal for debugging
             document.getElementById('emailSubject').innerHTML = 
                 `<i class="fas fa-exclamation-triangle text-danger me-2"></i>Error Loading Email`;
             document.getElementById('emailFrom').textContent = 'Debug Info';
             document.getElementById('emailTo').textContent = `Email ID: ${emailId}`;
             document.getElementById('emailDate').textContent = new Date().toLocaleString();
             document.getElementById('emailBody').innerHTML = `
-                <div class="alert alert-danger">
+                <div class="alert alert-danger border-0">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <strong>Failed to Load Email</strong>
                     <p class="mb-2">Error details:</p>
@@ -525,22 +527,22 @@ function decryptQuantumEmail(emailId) {
     .then(data => {
         if (data.status === 'decrypted') {
             document.getElementById('emailBody').innerHTML = `
-                <div class="alert alert-success">
+                <div class="alert border-0" style="background: #d1e7dd; color: #0f5132;">
                     <i class="fas fa-check-circle me-2"></i>
-                    <strong>✅ Quantum Decryption Successful!</strong>
+                    <strong>Quantum Decryption Successful!</strong>
                     <br><small>Security Level: ${data.security_level}</small>
                 </div>
                 <div class="mt-3">
                     <strong>Subject:</strong> ${data.content.subject || 'N/A'}<br><br>
                     <strong>Message:</strong><br>
-                    <div class="bg-light p-3 rounded mt-2">
+                    <div class="bg-light p-3 border mt-2">
                         ${(data.content.body_html || data.content.body_text || 'No content').replace(/\n/g, '<br>')}
                     </div>
                 </div>
             `;
         } else {
             document.getElementById('emailBody').innerHTML += `
-                <div class="alert alert-danger mt-3">
+                <div class="alert alert-danger border-0 mt-3">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <strong>Decryption Failed:</strong> ${data.error}
                 </div>
@@ -549,7 +551,7 @@ function decryptQuantumEmail(emailId) {
     })
     .catch(error => {
         document.getElementById('emailBody').innerHTML += `
-            <div class="alert alert-danger mt-3">
+            <div class="alert alert-danger border-0 mt-3">
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 <strong>Decryption Error:</strong> ${error.message}
             </div>
@@ -577,7 +579,6 @@ function replyToEmail() {
     }
 }
 
-// Quantum Email Functions
 document.getElementById('quantumComposeForm').addEventListener('submit', function(e) {
     e.preventDefault();
     sendQuantumEmail();
@@ -593,7 +594,7 @@ function sendQuantumEmail() {
     
     const submitBtn = document.querySelector('#quantumComposeForm button[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>🔒 Encrypting & Sending...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Encrypting & Sending...';
     
     fetch('/api/qkd/send/', {
         method: 'POST',
@@ -606,26 +607,24 @@ function sendQuantumEmail() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'sent') {
-            alert(`✅ Quantum email sent successfully!\n🔒 Quantum Security: ${data.quantum_secured ? 'Active' : 'Inactive'}\n📧 Email ID: ${data.email_id}`);
+            alert(`Quantum email sent successfully!\nQuantum Security: ${data.quantum_secured ? 'Active' : 'Inactive'}\nEmail ID: ${data.email_id}`);
             new bootstrap.Modal(document.getElementById('quantumComposeModal')).hide();
             document.getElementById('quantumComposeForm').reset();
             refreshInbox();
         } else {
-            alert('❌ Failed to send quantum email: ' + data.error);
+            alert('Failed to send quantum email: ' + data.error);
         }
     })
     .catch(error => {
-        alert('❌ Error sending quantum email: ' + error.message);
+        alert('Error sending quantum email: ' + error.message);
     })
     .finally(() => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-lock me-1"></i>🔒 Send Quantum Email';
+        submitBtn.innerHTML = '<i class="fas fa-lock me-1"></i>Send Quantum Email';
     });
 }
 
-// QKD Status Functions
 function updateQKDStatus() {
-    // Update QKD status in sidebar using public endpoint
     fetch('/client/api/qkd/status/')
         .then(response => response.json())
         .then(data => {
@@ -645,14 +644,12 @@ function updateQKDStatus() {
             document.getElementById('available-keys').textContent = totalKeys;
             document.getElementById('active-sessions').textContent = isActive ? 1 : 0;
             
-            // Update progress bar
-            const maxKeys = 100; // Assume max of 100 keys
+            const maxKeys = 100;
             const keyPercentage = Math.min((totalKeys / maxKeys) * 100, 100);
             document.getElementById('key-availability-bar').style.width = keyPercentage + '%';
             
-            // Update compose modal status
             document.getElementById('qkd-status-compose').innerHTML = 
-                isActive ? '✅ QKD Active' : '⚠️ QKD Standby';
+                isActive ? 'QKD Active' : 'QKD Standby';
             document.getElementById('qkd-keys-compose').textContent = 
                 `Keys: ${totalKeys} available`;
         })
@@ -663,7 +660,6 @@ function updateQKDStatus() {
 }
 
 function loadQKDSettings() {
-    // Load key managers using public endpoint
     fetch('/client/api/qkd/key-managers/')
         .then(response => response.json())
         .then(data => {
@@ -674,16 +670,16 @@ function loadQKDSettings() {
             }
             
             container.innerHTML = data.key_managers.map(km => `
-                <div class="card mb-2">
-                    <div class="card-body p-2">
+                <div class="card mb-2 border-0 shadow-sm">
+                    <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>${km.name}</strong>
+                                <strong style="font-weight: 600;">${km.name}</strong>
                                 <br><small class="text-muted">${km.base_url}</small>
-                                <br><small class="text-info">${km.is_simulated ? 'Simulated' : 'Real'} KM</small>
+                                <br><small style="color: #0d6efd; font-weight: 500;">${km.is_simulated ? 'Simulated' : 'Real'} KM</small>
                             </div>
                             <div class="text-end">
-                                <span class="badge ${km.is_active ? 'bg-success' : 'bg-secondary'}">
+                                <span class="badge" style="background: ${km.is_active ? '#198754' : '#6c757d'}; font-weight: 500;">
                                     ${km.is_active ? 'Active' : 'Inactive'}
                                 </span>
                                 <br><small class="text-muted">${km.key_statistics.total_keys} keys</small>
@@ -699,7 +695,6 @@ function loadQKDSettings() {
                 '<p class="text-danger">Failed to load Key Manager information</p>';
         });
     
-    // Show placeholder for external providers section
     const providersContainer = document.getElementById('external-providers-list');
     if (providersContainer) {
         providersContainer.innerHTML = '<p class="text-muted">External email providers integration coming soon...</p>';
@@ -707,25 +702,21 @@ function loadQKDSettings() {
 }
 
 function testQKDConnection() {
-    alert('🔧 Testing QKD connections...\n\nThis would test connectivity to all configured Key Managers and external email providers.');
+    alert('Testing QKD connections...\n\nThis would test connectivity to all configured Key Managers and external email providers.');
 }
 
 function refreshInbox() {
     location.reload();
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     updateQKDStatus();
     
-    // Update QKD status every 30 seconds
     setInterval(updateQKDStatus, 30000);
     
-    // Load QKD settings when modal is opened
     document.getElementById('qkdSettingsModal').addEventListener('shown.bs.modal', loadQKDSettings);
 });
 
-// Auto-refresh inbox every 30 seconds
-setInterval(refreshInbox, 30000);
+{% comment %} setInterval(refreshInbox, 30000); {% endcomment %}
 </script>
 {% endblock %}

@@ -5,44 +5,53 @@
 {% block content %}
 <div class="row justify-content-center mt-5">
     <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-header text-center bg-primary text-white">
-                <h4><i class="fas fa-envelope me-2"></i>Qute-Mail Login</h4>
+        <div class="card shadow border-0">
+            <div class="card-header text-center bg-dark text-white border-0" style="padding: 1.5rem;">
+                <h4 class="mb-0 text-uppercase" style="font-weight: 700; letter-spacing: 1px;">
+                    <i class="fas fa-envelope me-2"></i>Qute-Mail
+                </h4>
+                <small style="text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; opacity: 0.9;">Secure Mail Access</small>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="padding: 2rem; background: #f8f9fa;">
                 <form method="post" id="loginForm">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
+                        <label for="email" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">Email Address</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   placeholder="user@localhost" required>
+                            <span class="input-group-text bg-white border-end-0" style="border-color: #dee2e6;">
+                                <i class="fas fa-envelope" style="color: #6c757d;"></i>
+                            </span>
+                            <input type="email" class="form-control border-start-0" id="email" name="email" 
+                                   placeholder="user@localhost" required 
+                                   style="border-color: #dee2e6; padding: 0.625rem;">
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
+                    <div class="mb-4">
+                        <label for="password" class="form-label" style="font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">Password</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" 
-                                   placeholder="Enter your password" required>
+                            <span class="input-group-text bg-white border-end-0" style="border-color: #dee2e6;">
+                                <i class="fas fa-lock" style="color: #6c757d;"></i>
+                            </span>
+                            <input type="password" class="form-control border-start-0" id="password" name="password" 
+                                   placeholder="Enter your password" required 
+                                   style="border-color: #dee2e6; padding: 0.625rem;">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-dark w-100 text-uppercase" style="font-weight: 600; letter-spacing: 0.5px; padding: 0.75rem;">
                         <i class="fas fa-sign-in-alt me-1"></i>Login
                     </button>
                 </form>
                 
-                <hr>
+                <hr style="margin: 1.5rem 0; border-color: #dee2e6;">
                 <div class="text-center">
-                    <p class="mb-2">Don't have an account?</p>
-                    <a href="{% url 'email_client:register' %}" class="btn btn-outline-success">
+                    <p class="mb-2" style="font-size: 0.9375rem; color: #6c757d;">Don't have an account?</p>
+                    <a href="{% url 'email_client:register' %}" class="btn btn-outline-dark text-uppercase" style="font-weight: 600; letter-spacing: 0.5px; padding: 0.625rem 1.5rem;">
                         <i class="fas fa-user-plus me-1"></i>Create Account
                     </a>
                 </div>
             </div>
-            <div class="card-footer text-center text-muted">
-                <small>Use your email account credentials to access your mailbox</small>
+            <div class="card-footer text-center bg-white border-0" style="padding: 1rem;">
+                <small style="color: #6c757d; font-size: 0.8125rem;">Use your email account credentials to access your mailbox</small>
             </div>
         </div>
     </div>
@@ -50,28 +59,40 @@
 
 <div class="row justify-content-center mt-4">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="fas fa-info-circle me-2"></i>Test Accounts</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom" style="padding: 1rem 1.25rem;">
+                <h5 class="mb-0 text-uppercase" style="font-weight: 600; letter-spacing: 0.5px; font-size: 1rem;">
+                    <i class="fas fa-info-circle me-2"></i>Test Accounts
+                </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="padding: 1.5rem; background: #f8f9fa;">
                 <div class="row">
-                    <div class="col-md-6">
-                        <h6>Available Test Users:</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-user me-2"></i>admin@localhost</li>
-                            <li><i class="fas fa-user me-2"></i>user@localhost</li>
-                            <li><i class="fas fa-user me-2"></i>support@localhost</li>
-                            <li><i class="fas fa-user me-2"></i>test@localhost</li>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-uppercase mb-3" style="font-weight: 600; letter-spacing: 0.5px; font-size: 0.875rem;">Available Test Users:</h6>
+                        <ul class="list-unstyled" style="line-height: 2;">
+                            <li style="font-family: 'Courier New', monospace; font-size: 0.9375rem;">
+                                <i class="fas fa-user me-2" style="color: #0d6efd;"></i>admin@localhost
+                            </li>
+                            <li style="font-family: 'Courier New', monospace; font-size: 0.9375rem;">
+                                <i class="fas fa-user me-2" style="color: #0d6efd;"></i>user@localhost
+                            </li>
+                            <li style="font-family: 'Courier New', monospace; font-size: 0.9375rem;">
+                                <i class="fas fa-user me-2" style="color: #0d6efd;"></i>support@localhost
+                            </li>
+                            <li style="font-family: 'Courier New', monospace; font-size: 0.9375rem;">
+                                <i class="fas fa-user me-2" style="color: #0d6efd;"></i>test@localhost
+                            </li>
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h6>Default Password:</h6>
-                        <p class="text-muted">Use any password for demo purposes</p>
-                        <small class="text-info">
-                            <i class="fas fa-lightbulb me-1"></i>
-                            Try logging in with different accounts in separate browser tabs to test email exchange!
-                        </small>
+                        <h6 class="text-uppercase mb-3" style="font-weight: 600; letter-spacing: 0.5px; font-size: 0.875rem;">Default Password:</h6>
+                        <p class="text-muted" style="font-size: 0.9375rem; margin-bottom: 1rem;">Use any password for demo purposes</p>
+                        <div class="alert border-0" style="background: #cff4fc; color: #055160; padding: 0.75rem 1rem;">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <small style="font-weight: 500;">
+                                Try logging in with different accounts in separate browser tabs to test email exchange!
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>

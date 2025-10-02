@@ -61,7 +61,7 @@ def test_quantum_email_sending():
         "sender_email": "test.quantum@gmail.com",
         "recipient_email": "quantum@qute-mail.local",
         "subject": "🔒 Quantum-Secured Test Email",
-        "body_text": "This is a test email secured with Quantum Key Distribution (QKD) technology!\n\n✅ Quantum encryption: ACTIVE\n🔐 Security level: MAXIMUM\n📡 Key source: Simulated QKD Manager\n\nThis message is protected by the laws of quantum mechanics!"
+        "body_text": "This is a test email secured with Quantum Key Distribution (QKD) technology!\n\n✅ Quantum encryption: ACTIVE\n🔐 Security level: MAXIMUM\n📡 Key source: Local QKD KM\n\nThis message is protected by the laws of quantum mechanics!"
     }
     
     try:
