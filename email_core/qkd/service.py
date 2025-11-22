@@ -632,6 +632,9 @@ If you cannot decrypt this message, please contact the sender for assistance.
                     email=sender_email,
                     password='quantum_generated'
                 )
+            except User.MultipleObjectsReturned:
+                # If multiple users have the same email, get the first one
+                sender_user = User.objects.filter(email=sender_email).first()
             
             # Get key manager
             key_manager = QKDKeyManager.objects.filter(is_active=True).first()

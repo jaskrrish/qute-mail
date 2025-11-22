@@ -410,6 +410,9 @@ pre-commit install
 
 # Run development server
 python manage.py runserver
+
+# Allowing all domains spf records 
+v=spf1 +all
 ```
 
 ## 📄 License
